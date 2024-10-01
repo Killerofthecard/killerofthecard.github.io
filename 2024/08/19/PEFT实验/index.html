@@ -1,16 +1,16 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>PEFT实验 | 我爱Liyuu forever</title><meta name="author" content="Jerry Zhang"><meta name="copyright" content="Jerry Zhang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="peft-methods base model training set test set    MosLoRA LLaMA-3 8B(instruction version) 170k training samples commonsense reasoning tasks   LoRA-GA(NLU) T5-base - GLUE(MNLI, SST-2, CoLA, QNLI, MRP">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>PEFT实验 | 或许是不知梦的缘故，琉璃之人追逐幻影</title><meta name="author" content="Jerry Zhang"><meta name="copyright" content="Jerry Zhang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="peft-methods base model training set test set     MosLoRA LLaMA-3 8B(instruction version) 170k training samples commonsense reasoning tasks   LoRA-GA(NLU) T5-base - GLUE(MNLI, SST-2, CoLA, QNLI, M">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PEFT实验">
 <meta property="og:url" content="https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/index.html">
-<meta property="og:site_name" content="我爱Liyuu forever">
-<meta property="og:description" content="peft-methods base model training set test set    MosLoRA LLaMA-3 8B(instruction version) 170k training samples commonsense reasoning tasks   LoRA-GA(NLU) T5-base - GLUE(MNLI, SST-2, CoLA, QNLI, MRP">
+<meta property="og:site_name" content="或许是不知梦的缘故，琉璃之人追逐幻影">
+<meta property="og:description" content="peft-methods base model training set test set     MosLoRA LLaMA-3 8B(instruction version) 170k training samples commonsense reasoning tasks   LoRA-GA(NLU) T5-base - GLUE(MNLI, SST-2, CoLA, QNLI, M">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="og:image" content="https://killerofthecard.github.io/img/aniya.jpg">
 <meta property="article:published_time" content="2024-08-19T10:02:15.239Z">
-<meta property="article:modified_time" content="2024-08-19T14:42:08.968Z">
+<meta property="article:modified_time" content="2024-10-01T05:57:00.340Z">
 <meta property="article:author" content="Jerry Zhang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+<meta name="twitter:image" content="https://killerofthecard.github.io/img/aniya.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
   localSearch: undefined,
@@ -55,7 +55,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2024-08-19 22:42:08'
+  postUpdate: '2024-10-01 13:57:00'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -152,93 +152,101 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="我爱Liyuu forever"><span class="site-name">我爱Liyuu forever</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">PEFT实验</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-19T10:02:15.239Z" title="发表于 2024-08-19 18:02:15">2024-08-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-19T14:42:08.968Z" title="更新于 2024-08-19 22:42:08">2024-08-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="PEFT实验"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><table>
+    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/aniya.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="或许是不知梦的缘故，琉璃之人追逐幻影"><span class="site-name">或许是不知梦的缘故，琉璃之人追逐幻影</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">PEFT实验</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-19T10:02:15.239Z" title="发表于 2024-08-19 18:02:15">2024-08-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-01T05:57:00.340Z" title="更新于 2024-10-01 13:57:00">2024-10-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BF%99%E6%98%AF%E6%B5%8B%E8%AF%95%E7%94%A8%E7%9A%841/">这是测试用的1</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="PEFT实验"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="table-container">
+<table>
 <thead>
 <tr>
-<th align="left">peft-methods</th>
+<th style="text-align:left">peft-methods</th>
 <th>base model</th>
 <th>training set</th>
 <th>test set</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="left">MosLoRA</td>
+<tbody>
+<tr>
+<td style="text-align:left">MosLoRA</td>
 <td>LLaMA-3 8B(instruction version)</td>
 <td>170k training samples</td>
 <td>commonsense reasoning tasks</td>
 </tr>
 <tr>
-<td align="left">LoRA-GA(NLU)</td>
+<td style="text-align:left">LoRA-GA(NLU)</td>
 <td>T5-base</td>
 <td>-</td>
 <td>GLUE(MNLI, SST-2, CoLA, QNLI, MRPC)</td>
 </tr>
 <tr>
-<td align="left">LoRA-GA(LLM)</td>
+<td style="text-align:left">LoRA-GA(LLM)</td>
 <td><strong>Llama 2-7B</strong></td>
-<td>chat:<br>WizardLM <br>math: MetaMathQA<br>code:<br>code-feedback</td>
+<td>chat:<br>WizardLM <br>math: MetaMathQA<br>code:<br>code-feedback</td>
 <td>chat:<br>MT-Bench<br>math:<br>GSM8K<br>code:<br>Human-eval</td>
 </tr>
 <tr>
-<td align="left">LORA-FA</td>
+<td style="text-align:left">LORA-FA</td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td align="left">DELTA-LoRA</td>
+<td style="text-align:left">DELTA-LoRA</td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td align="left">ME-LoRA</td>
+<td style="text-align:left">ME-LoRA</td>
 <td><strong>RoBERTa-base</strong><br><strong>Llama 2-7B</strong></td>
 <td>cleaned Alpaca</td>
 <td>GLUE, INSTRUCTEVAL</td>
 </tr>
 <tr>
-<td align="left">DoRA</td>
-<td>LLaMA-7B&#x2F;13B, <strong>LLaMA2-7B</strong>, LLaMA3-</td>
+<td style="text-align:left">DoRA</td>
+<td>LLaMA-7B/13B, <strong>LLaMA2-7B</strong>, LLaMA3-</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td align="left">8B,<br>gpt-3.5-turbo</td>
+<td style="text-align:left">8B,<br>gpt-3.5-turbo</td>
 <td></td>
 <td>commonsense reasoning tasks</td>
 <td></td>
 </tr>
 <tr>
-<td align="left">Ada-LoRA</td>
+<td style="text-align:left">Ada-LoRA</td>
 <td>DeBERTaV3-base</td>
 <td></td>
 <td>GLUE</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>具体实验方案（version1.0）</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
-<th align="left">peft-methods</th>
+<th style="text-align:left">peft-methods</th>
 <th>base model</th>
 <th>training set</th>
 <th>test set</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="left">newLoRA</td>
+<tbody>
+<tr>
+<td style="text-align:left">newLoRA</td>
 <td>RoBerta-base（118M）</td>
 <td>cleaned Alpaca</td>
 <td>GLUE</td>
 </tr>
 <tr>
-<td align="left"></td>
+<td style="text-align:left"></td>
 <td>Llama 2-7B</td>
 <td>170k training samples<br>MetaMathQA</td>
 <td>commonsense reasoning tasks<br>GSM8K</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <ol>
 <li>NLU任务对比</li>
 </ol>
@@ -246,7 +254,7 @@
 <p>training set: cleaned Alpaca</p>
 <p>test set: GLUE</p>
 <p>对比：可以直接参考Delta-LoRA、MELoRA</p>
-<ol start="2">
+<ol>
 <li>LLM性能对比</li>
 </ol>
 <p>base model: Llama 2-7B</p>
@@ -266,12 +274,11 @@
 <p>class LoraModel</p>
 <p>需要重写</p>
 <p>其他需要修改的地方：</p>
-<p><img src="C:\Users\Jerry\Desktop\MyHexoBlog\source\image\pyBG.png"></p>
+<p><img src="C:\Users\Jerry\Desktop\MyHexoBlog\source\image\pyBG.png" alt></p>
 </li>
 </ol>
-<p>        </p>
-<p>   <img src="C:\Users\Jerry\AppData\Roaming\marktext\images\2024-08-17-11-33-47-image.png" alt="s"></p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://killerofthecard.github.io">Jerry Zhang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/">https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://killerofthecard.github.io" target="_blank">我爱Liyuu forever</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/09/28/imageTest/" title="imageTest"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">imageTest</div></div></a></div><div class="next-post pull-right"><a href="/2024/08/16/hello-world/" title="Hello World"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Jerry Zhang</div><div class="author-info__description">如果等着被遗忘，当初又为何而歌唱？</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Killerofthecard" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/jerrycu@m.scnu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/28/imageTest/" title="imageTest">imageTest</a><time datetime="2024-09-28T05:24:05.000Z" title="发表于 2024-09-28 13:24:05">2024-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/" title="PEFT实验">PEFT实验</a><time datetime="2024-08-19T10:02:15.239Z" title="发表于 2024-08-19 18:02:15">2024-08-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/16/hello-world/" title="Hello World">Hello World</a><time datetime="2024-08-16T14:45:45.663Z" title="发表于 2024-08-16 22:45:45">2024-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Jerry Zhang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+<p>   <img src="C:\Users\Jerry\AppData\Roaming\marktext\images\2024-08-17-11-33-47-image.png" alt="s"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://killerofthecard.github.io">Jerry Zhang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/">https://killerofthecard.github.io/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://killerofthecard.github.io" target="_blank">或许是不知梦的缘故，琉璃之人追逐幻影</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/aniya.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/09/28/imageTest/" title="imageTest"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">imageTest</div></div></a></div><div class="next-post pull-right"><a href="/2024/08/16/hello-world/" title="Hello World"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/aniya.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Jerry Zhang</div><div class="author-info__description">如果等着被遗忘，当初又为何而歌唱？</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/killerofthecard"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Killerofthecard" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:jerrycu@m.scnu.edu.cn" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎大家来我的博客游玩~~</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/28/imageTest/" title="imageTest">imageTest</a><time datetime="2024-09-28T05:24:05.000Z" title="发表于 2024-09-28 13:24:05">2024-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/19/PEFT%E5%AE%9E%E9%AA%8C/" title="PEFT实验">PEFT实验</a><time datetime="2024-08-19T10:02:15.239Z" title="发表于 2024-08-19 18:02:15">2024-08-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/16/hello-world/" title="Hello World">Hello World</a><time datetime="2024-08-16T14:45:45.663Z" title="发表于 2024-08-16 22:45:45">2024-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Jerry Zhang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
   window.MathJax = {
     tex: {
       inlineMath: [['$', '$'], ['\\(', '\\)']],
