@@ -33,11 +33,11 @@
   
   
   <entry>
-    <title>一个token的视角｜重新看Self&#92;-Attention原理</title>
+    <title>一个token的视角｜重新看Self-Attention机制</title>
     <link href="/2026/07/10/attn/"/>
     <url>/2026/07/10/attn/</url>
     
-    <content type="html"><![CDATA[<p>作为大模型的基础，本文来系统梳理一下Self-Attention的原理，并从token的视角来讲解其中发生的事情。</p><h1 id="矩阵形式"><a href="#矩阵形式" class="headerlink" title="矩阵形式"></a>矩阵形式</h1><p>许多blog或教程总是从token的视角来切入Self-Attention机制的讲解，笔者认为这不够直观，对于初学者而言从token向量来看会引入过多的下标，反而增加了理解的难度。我们考虑矩阵形式引入，问题就会变得清晰、自然：</p><p>$\text{Attention}(Q, K, V) &#x3D; \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$</p>]]></content>
+    <content type="html"><![CDATA[<p>作为大模型的基础，本文来系统梳理一下Self-Attention的原理，并从token的视角来讲解其中发生的事情。</p><h1 id="矩阵形式"><a href="#矩阵形式" class="headerlink" title="矩阵形式"></a>矩阵形式</h1><p>许多blog或教程总是从token的视角来切入Self-Attention机制的讲解，笔者认为这不够直观，对于初学者而言从token向量来看会引入过多的下标，反而增加了理解的难度。我们考虑矩阵形式引入，问题就会变得清晰、自然：</p><p>$$\text{Attention}(Q, K, V) &#x3D; \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$</p>]]></content>
     
     
     <categories>
