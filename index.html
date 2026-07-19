@@ -333,13 +333,76 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2026/07/19/attn/" target="_self">
+        <a href="/2026/05/26/multi-head-attn/" target="_self">
+          为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/05/26/multi-head-attn/" target="_self">
+        <div>
+          在上一篇文章中我们梳理了单头 Self-Attention 的矩阵形式与缩放因子的来源。一个自然的问题是：既然一个注意力头已经能捕捉 token 之间的相似性，为什么要用多个头？本文来回答这个问题。 1. 从单头到多头：形式化定义回顾单头注意力的形式： $$\text{head}_i &#x3D; \text{Attention}(QW_i^Q, KW_i^K, VW_i^V) &#x3D; \t
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-05-26 00:00" pubdate>
+              2026-05-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84/" class="category-chain-item">模型架构</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/attention/">#attention</a>
+            
+              <a href="/tags/%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84/">#模型架构</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/05/20/attn/" target="_self">
           一个token的视角｜重新看Self-Attention机制
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2026/07/19/attn/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/05/20/attn/" target="_self">
         <div>
           作为大模型的基础，本文来系统梳理一下Self-Attention的原理，并从token的视角来讲解其中发生的事情。 1. 矩阵形式许多blog或教程总是从token的视角来切入Self-Attention机制的讲解，笔者认为这不够直观，对于初学者而言从token向量来看会引入过多的下标，反而增加了理解的难度。我们考虑矩阵形式引入，问题就会变得清晰、自然：$$\text{Attention}(Q,
         </div>
@@ -349,8 +412,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2026-07-19 16:10" pubdate>
-              2026-07-19
+            <time datetime="2026-05-20 00:00" pubdate>
+              2026-05-20
             </time>
           </div>
         
