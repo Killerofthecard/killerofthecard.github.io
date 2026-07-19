@@ -19,23 +19,24 @@
   <meta name="author" content="Jerry Zhang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="在上一篇文章中我们梳理了单头 Self-Attention 的矩阵形式与缩放因子的来源。一个自然的问题是：既然一个注意力头已经能捕捉 token 之间的相似性，为什么要用多个头？本文来回答这个问题。 1. 从单头到多头：形式化定义回顾单头注意力的形式： $$\text{head}_i &#x3D; \text{Attention}(QW_i^Q, KW_i^K, VW_i^V) &#x3D; \t">
+    <meta name="description" content="大模型能力突飞猛进的当下，一个反直觉的事实逐渐浮出水面：同一个模型，放在不同的”脚手架”里，能表现出截然不同的能力。Lilian Weng（前OpenAI安全研究VP、Thinking Machines Lab联合创始人）在近期万字长文 Harness Engineering for Self-Improvement 中系统阐述了这一观点，并指出——AI 自进化的近路，可能不在于模型修改自身权重，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解">
-<meta property="og:url" content="https://killerofthecard.github.io/2026/05/26/multi-head-attn/index.html">
+<meta property="og:title" content="不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程">
+<meta property="og:url" content="https://killerofthecard.github.io/2026/07/20/harness-self-evolve/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="在上一篇文章中我们梳理了单头 Self-Attention 的矩阵形式与缩放因子的来源。一个自然的问题是：既然一个注意力头已经能捕捉 token 之间的相似性，为什么要用多个头？本文来回答这个问题。 1. 从单头到多头：形式化定义回顾单头注意力的形式： $$\text{head}_i &#x3D; \text{Attention}(QW_i^Q, KW_i^K, VW_i^V) &#x3D; \t">
+<meta property="og:description" content="大模型能力突飞猛进的当下，一个反直觉的事实逐渐浮出水面：同一个模型，放在不同的”脚手架”里，能表现出截然不同的能力。Lilian Weng（前OpenAI安全研究VP、Thinking Machines Lab联合创始人）在近期万字长文 Harness Engineering for Self-Improvement 中系统阐述了这一观点，并指出——AI 自进化的近路，可能不在于模型修改自身权重，">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-05-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-19T16:36:43.213Z">
+<meta property="article:published_time" content="2026-07-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-19T16:43:20.719Z">
 <meta property="article:author" content="Jerry Zhang">
-<meta property="article:tag" content="attention">
+<meta property="article:tag" content="agent">
+<meta property="article:tag" content="self-improvement">
 <meta property="article:tag" content="模型架构">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解 - Hexo</title>
+  <title>不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -304,7 +305,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解"></span>
+            <span id="subtitle" data-typed-text="不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程"></span>
           
         </div>
 
@@ -315,8 +316,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2026-05-26 00:00" pubdate>
-          2026年5月26日 凌晨
+        <time datetime="2026-07-20 00:00" pubdate>
+          2026年7月20日 凌晨
         </time>
       </span>
     
@@ -327,7 +328,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          5k 字
         
       </span>
     
@@ -338,7 +339,7 @@
         
         
         
-          24 分钟
+          42 分钟
         
       </span>
     
@@ -377,49 +378,145 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解</h1>
+            <h1 id="seo-header">不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程</h1>
             
             
               <div class="markdown-body">
                 
-                <p>在<a href="../attn">上一篇文章</a>中我们梳理了单头 Self-Attention 的矩阵形式与缩放因子的来源。一个自然的问题是：既然一个注意力头已经能捕捉 token 之间的相似性，为什么要用多个头？本文来回答这个问题。</p>
-<h1 id="1-从单头到多头：形式化定义"><a href="#1-从单头到多头：形式化定义" class="headerlink" title="1. 从单头到多头：形式化定义"></a>1. 从单头到多头：形式化定义</h1><p>回顾单头注意力的形式：</p>
-<p>$$\text{head}_i &#x3D; \text{Attention}(QW_i^Q, KW_i^K, VW_i^V) &#x3D; \text{softmax}!\left(\frac{QW_i^Q (KW_i^K)^T}{\sqrt{d_k}}\right) VW_i^V$$</p>
-<p>其中 $W_i^Q, W_i^K \in \mathbb{R}^{d_{\text{model}} \times d_k}$，$W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_v}$ 是第 $i$ 个头的投影矩阵。多头注意力的核心操作是：将 $h$ 个独立计算的注意力头沿最后一个维度拼接，再经一次线性投影回到原始维度：</p>
-<p>$$\text{MultiHead}(Q, K, V) &#x3D; \text{Concat}(\text{head}_1, \text{head}_2, \dots, \text{head}_h) , W_O$$</p>
-<p>其中 $W_O \in \mathbb{R}^{h d_v \times d_{\text{model}}}$ 是输出投影矩阵。标准 Transformer 中取 $d_k &#x3D; d_v &#x3D; d_{\text{model}} &#x2F; h$（例如原始论文中 $d_{\text{model}} &#x3D; 512$，$h &#x3D; 8$，则每个头的维度为 $d_k &#x3D; d_v &#x3D; 64$）。</p>
-<p><strong>关键区别</strong>：单头注意力的 $Q, K, V$ 各自只经过一组投影矩阵，而多头注意力为每个头分配了独立的三组投影矩阵 ${W_i^Q, W_i^K, W_i^V}$。这意味着不同头可以将输入映射到<strong>不同的表示子空间</strong>中进行注意力计算。</p>
-<h1 id="2-为什么需要多个头？——-从子空间的角度理解"><a href="#2-为什么需要多个头？——-从子空间的角度理解" class="headerlink" title="2. 为什么需要多个头？—— 从子空间的角度理解"></a>2. 为什么需要多个头？—— 从子空间的角度理解</h1><p>如果只有一个头，注意力机制本质上是在单一语义空间中对 token 关系建模。考虑如下句子：</p>
-<blockquote>
-<p>“<strong>The cat sat on the mat because it was tired.</strong>“</p>
-</blockquote>
-<p>代词 “it” 与 “cat” 存在<strong>指代关系</strong>（共指消解），与 “sat” 存在<strong>主谓关系</strong>（句法依赖），与 “tired” 存在<strong>因果关系</strong>（语义推理）。单个注意力头需要在一个统一的表示空间中同时捕捉这三种性质迥异的关系——这无疑对 $d_k$ 维向量的表达能力提出了极高要求，且不同关系之间可能相互干扰。</p>
-<p>多头的关键洞察在于：<strong>不同的头可以特化于不同层面的关系</strong>。</p>
-<p>具体来说，每个头 $i$ 有自己独立的投影矩阵 $W_i^Q, W_i^K$，这意味着：</p>
-<p>$$s_{ab}^{(i)} &#x3D; \frac{(x_a W_i^Q)(x_b W_i^K)^T}{\sqrt{d_k}}$$</p>
-<p>即 token $a$ 与 token $b$ 在第 $i$ 个头下的相似度分数，取决于它们在该头所定义的特定子空间中的距离。训练过程中，不同头会自发学习关注不同模式——有的头可能偏向句法依存，有的头可能偏向长距离语义关联，还有的头可能偏向位置邻近关系。这并非人为指定，而是通过梯度反向传播自然涌现的分工。</p>
-<h1 id="3-为什么不直接增大单头的维度？"><a href="#3-为什么不直接增大单头的维度？" class="headerlink" title="3. 为什么不直接增大单头的维度？"></a>3. 为什么不直接增大单头的维度？</h1><p>读者可能会问：如果目标是增加表达能力，为什么不直接把 $d_k$ 设大一些，而要拆成多个头再拼回来？</p>
-<p>这是一个好问题。考虑两种方案的总参数量：</p>
+                <p>大模型能力突飞猛进的当下，一个反直觉的事实逐渐浮出水面：<strong>同一个模型，放在不同的”脚手架”里，能表现出截然不同的能力</strong>。Lilian Weng（前OpenAI安全研究VP、Thinking Machines Lab联合创始人）在近期万字长文 <em>Harness Engineering for Self-Improvement</em> 中系统阐述了这一观点，并指出——AI 自进化的近路，可能不在于模型修改自身权重，而在于优化包裹模型的那层”Harness”（运行脚手架）。本文结合该文及相关前沿工作（Self-Harness、Darwin Gödel Machine），梳理这一方向的核心思想与技术路径。</p>
+<h1 id="1-什么是-Harness？"><a href="#1-什么是-Harness？" class="headerlink" title="1. 什么是 Harness？"></a>1. 什么是 Harness？</h1><p>先厘清概念。Harness 指模型之外、负责调度和编排的一切：模型如何调用工具、如何管理上下文、如何读写文件、如何拆解任务和派发子Agent、如何验证结果、如何从失败中恢复。如果你用过 Claude Code 或 Codex CLI，你所交互的那个”命令行 Agent 层”就是典型的 Harness。</p>
+<p>传统认知中，系统性能提升的路径是：</p>
+<p>$$\text{更好的模型} \Rightarrow \text{更强的能力}$$</p>
+<p>但 Harness 工程的核心主张是，这条路径还应有一条正交的维度：</p>
+<p>$$\text{更好的 Harness} \Rightarrow \text{同一模型} \Rightarrow \text{更强的能力}$$</p>
+<p>二者构成一个二维的提升空间。而且——这一点尤为关键——Harness 优化走到极致，可以形成<strong>闭环</strong>：让模型自己去改进自己的 Harness。这便是自进化（Self-Evolve）的工程入口。</p>
+<p>Weng 将 Harness 的优化层次递进概括为一条清晰的链路：</p>
+<p>$$\text{prompt} ;\to; \text{结构化 context} ;\to; \text{workflow} ;\to; \text{harness code} ;\to; \text{optimizer code}$$</p>
+<p>越往右，自动化的程度越高，系统越接近真正的递归自我改进（Recursive Self-Improvement, RSI）。</p>
+<h1 id="2-三个基础设计模式"><a href="#2-三个基础设计模式" class="headerlink" title="2. 三个基础设计模式"></a>2. 三个基础设计模式</h1><p>在进入自进化之前，Weng 先厘清了现代 Harness 的三个基础设计模式，它们是后续所有自动化优化的地基。</p>
+<p><strong>模式一：Workflow 自动化循环</strong></p>
+<p>一个 goal-oriented 的 agent 循环，本质是四步迭代：</p>
+<p>$$\text{Plan} \to \text{Execute} \to \text{Observe} \to \text{Improve}$$</p>
+<p>与传统静态 prompt 模板不同，workflow 循环让模型分析自己的执行轨迹和失败记录，迭代式的改进策略。这一模式向上可以追溯到强化学习中的 agent-environment loop，区别在于这里将”环境反馈”替换为了代码执行结果、工具调用日志、validator 打分等结构化信号。</p>
+<p><strong>模式二：文件系统即持久记忆</strong></p>
+<p>长周期 agent 任务会积累大量中间产物——实验日志、代码 diff、错误堆栈、中间状态——这些很快超出上下文窗口的容量。一个成熟 Harness 的做法是：<strong>将状态持久化到文件系统</strong>（通过 bash 写入文件），而非全部塞进 context。这样做有两个好处：(1) 上下文保持精炼，模型始终聚焦当前步骤；(2) 中间产物可被事后审查、中断后恢复。Weng 指出，这种能力会随着基础模型本身能力的增强而自然受益——模型越聪明，越懂得什么该记、什么该丢。</p>
+<p><strong>模式三：子 Agent 与后台任务</strong></p>
+<p>Harness 可以 spawn 多个子 agent 并行执行，并通过文件&#x2F;日志&#x2F;状态记录来交换信息。这类似于操作系统的进程模型：父进程 fork 子进程，子进程写结果到文件，父进程收集并汇总。核心原则是<strong>输出必须可审查</strong>（inspectable），不能是黑箱——否则一出错就是连锁反应。</p>
+<h1 id="3-自进化-Harness：三层架构"><a href="#3-自进化-Harness：三层架构" class="headerlink" title="3. 自进化 Harness：三层架构"></a>3. 自进化 Harness：三层架构</h1><p>这是文章的重头戏。Weng 将 Harness 自动化优化分为三个递进的层次。</p>
+<p><strong>第一层：Context Engineering</strong></p>
+<p>这一层将 context 本身当作可以持续迭代优化的”操作手册”。代表性工作是 <strong>ACE (Agentic Context Engineering)</strong>：三个角色协作——</p>
 <ul>
-<li><strong>单头大维度</strong>：$Q, K, V$ 投影参数共 $3 \times d_{\text{model}} \times (h d_k) &#x3D; 3 d_{\text{model}} \cdot h d_k$</li>
-<li><strong>$h$ 头小维度</strong>：$h$ 组投影参数共 $h \times 3 \times d_{\text{model}} \times d_k &#x3D; 3 d_{\text{model}} \cdot h d_k$</li>
+<li><strong>Generator</strong>：生成任务执行轨迹；</li>
+<li><strong>Reflector</strong>：从成功&#x2F;失败中提炼经验洞察；</li>
+<li><strong>Curator</strong>：将洞察结构化地增量写入 context。</li>
 </ul>
-<p>二者参数总量相同（加上 $W_O$ 也一样，因为输出维度固定为 $d_{\text{model}}$）。但在相同参数预算下，多头的优势在于：</p>
-<p><strong>归纳偏置（Inductive Bias）</strong>：多头的结构显式地迫使模型在 $h$ 个独立的低维子空间中分别计算注意力，而非在一个高维空间中”混”在一起。这种结构先验使得模型更容易学到解耦的表示——每个头只需在 $d_k &#x3D; d_{\text{model}}&#x2F;h$ 维的小空间里做好一件事，而不是在一个高维空间里同时做很多件事。</p>
-<p>论文中的实验也印证了这一点：相同总维度下，$h &gt; 1$ 的多头配置在翻译质量和收敛速度上均优于单头大维度配置。</p>
-<h1 id="4-多头注意力的数学性质"><a href="#4-多头注意力的数学性质" class="headerlink" title="4. 多头注意力的数学性质"></a>4. 多头注意力的数学性质</h1><p>我们考虑多头注意力输出的一个有趣性质。记第 $i$ 个头的注意力权重矩阵为 $A^{(i)} \in \mathbb{R}^{n \times n}$：</p>
-<p>$$A^{(i)} &#x3D; \text{softmax}!\left(\frac{QW_i^Q (KW_i^K)^T}{\sqrt{d_k}}\right)$$</p>
-<p>那么该头的输出为 $\text{head}_i &#x3D; A^{(i)} V W_i^V$，完整的多头输出为：</p>
-<p>$$\text{MultiHead}(X) &#x3D; \sum_{i&#x3D;1}^{h} A^{(i)} , (V W_i^V) , W_{O}^{(i)}$$</p>
-<p>这里 $W_O^{(i)} \in \mathbb{R}^{d_v \times d_{\text{model}}}$ 是 $W_O$ 按头切分后的第 $i$ 个分块，即 $W_O &#x3D; [W_O^{(1)}; W_O^{(2)}; \dots; W_O^{(h)}]$。上式表明多头注意力的输出可以视为 $h$ 个独立注意力头的加权聚合（每一个头用自己的 $A^{(i)}$ 加权聚合 $V$ 在对应子空间中的映射），这种”各司其职、最后融合”的模式是多头机制的精髓。</p>
-<p>另一个值得注意的是<strong>残差连接与多头</strong>的配合：Transformer 的每个 sublayer 采用 $\text{LayerNorm}(X + \text{Sublayer}(X))$ 结构。即便某个头学到了”无用”的注意力模式，残差连接保证了 $X$ 本身被原样保留，该头不会破坏已有信息——这为多头结构的稳定训练提供了重要保障。</p>
-<h1 id="5-小结"><a href="#5-小结" class="headerlink" title="5. 小结"></a>5. 小结</h1><p>多头注意力并非对单头注意力的简单重复，而是通过<strong>子空间划分</strong>这一结构性先验，使模型能够在相同参数预算下学到更丰富、更解耦的 token 表示。三个要点：</p>
+<p>更进一步，<strong>MCE (Meta Context Engineering)</strong> 将”如何管理 context”和”应该在 context 中放什么”拆成两个优化层——外层进化 context 管理技能，内层使用这些技能优化具体任务的 context。这已经逼近”自我管理的记忆系统”。</p>
+<p><strong>第二层：Workflow Design</strong></p>
+<p>如果 context engineering 优化的是”给模型看什么”，这一层优化的是”让模型怎么做”。<strong>ADAS (Automated Design of Agentic Systems)</strong> 将 workflow 设计本身建模为搜索问题——一个 meta-agent 不断提出和评估新的 workflow 变体。<strong>AFlow</strong> 更进一步，将 workflow 表示为图（graph），用蒙特卡洛树搜索（MCTS）在图的拓扑空间中寻找最优结构。优化粒度从单个 prompt 提升到了整个 agent 行为的组织结构。</p>
+<p><strong>第三层：Self-Improving Harness（核心）</strong></p>
+<p>到了这一层，模型开始分析和修改 Harness 本身。最具代表性的工作是上海 AI Lab 的 <strong>Self-Harness</strong>——一个三阶段闭环系统：</p>
 <ol>
-<li>不同头将输入投影到<strong>不同的低维子空间</strong>中独立计算注意力；</li>
-<li>相同参数量下，多头的归纳偏置使模型比”胖单头”更易训练、效果更好；</li>
-<li>残差连接为多头结构的稳定性提供了底层保障——即使某些头暂时”失焦”，信息也不会被破坏。</li>
+<li><p><strong>Weakness Mining（弱点挖掘）</strong>：模型用当前 Harness 跑一批任务，收集完整的执行轨迹（工具调用、错误日志、validator 反馈）。失败的轨迹被聚类分析，识别出<strong>反复出现的、模型特异性的失败模式</strong>——例如：总是忘记产出最终文件、工具出错后反复重试无效指令、在探索阶段过度徘徊而不进入实现阶段。注意这里不是把每次失败当作独立事件，而是做<strong>模式归因</strong>。</p>
+</li>
+<li><p><strong>Harness Proposal（修改提案）</strong>：同一个模型切换到”提案者”角色，针对识别出的失败模式生成候选的 Harness 修改。修改的边界被严格限定在预先声明的<strong>可编辑表面</strong>（system prompt、工具使用规则、验证逻辑、runtime policy 等），不允许动核心架构。每个提案必须说明：它要改变什么行为、可能引入什么回归风险、为什么可能修复已识别的失败模式。</p>
+</li>
+<li><p><strong>Proposal Validation（回归验证）</strong>：候选修改通过严格的回归测试进行验证。一个保守的接收规则是：<strong>至少在一个评估分片上提升，且不在任何其他分片上退化</strong>。只有通过验证的修改才被合入下一个版本的 Harness，作为下一轮迭代的起点。</p>
+</li>
 </ol>
-<p>多头结构的变体（MQA、GQA）和效率优化也是当前大模型推理加速的热点话题，我们在后续文章中继续探讨。</p>
+<p>值得一提的是，整个过程是<strong>去主观化</strong>的——模型不能自己”觉得”改好了就算数，每一步都要经过可记录、可复现、可回滚的评估闸门。</p>
+<p>效果方面，在 Terminal-Bench-2.0（容器化终端环境中的多轮 agent benchmark）上，<strong>不换模型、不改工具、不改评估协议</strong>，Self-Harness 带来了显著的提升：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>提升前</th>
+<th>提升后</th>
+<th>相对提升</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Qwen3.5-35B-A3B</td>
+<td>23.8%</td>
+<td>38.1% (held-out)</td>
+<td><strong>+60%</strong></td>
+</tr>
+<tr>
+<td>MiniMax M2.5</td>
+<td>40.5%</td>
+<td>61.9%</td>
+<td>+53%</td>
+</tr>
+<tr>
+<td>GLM-5</td>
+<td>42.9%</td>
+<td>57.1%</td>
+<td>+33%</td>
+</tr>
+</tbody></table>
+<p>更有趣的是，不同模型的自进化方向截然不同——Self-Harness 产生的 Harness 修改是<strong>模型特异性</strong>的：</p>
+<ul>
+<li><strong>MiniMax M2.5</strong>（无尽探索型）：被加了 50 次工具调用后的 loop-breaker，以及尽早产出初始产物的规则；</li>
+<li><strong>Qwen3.5-35B-A3B</strong>（倔强重复型）：被加了依赖预检查、工具出错后的产物恢复逻辑、禁止精确重复指令的规则；</li>
+<li><strong>GLM-5</strong>（状态丢失型）：被加了跨 shell 命令保持环境变量的规则。</li>
+</ul>
+<p>这说明 Harness 自进化不是无脑”加长 prompt”，而是针对模型<strong>特定弱点的靶向修复</strong>。</p>
+<h1 id="4-进化搜索：Darwin-Godel-Machine"><a href="#4-进化搜索：Darwin-Godel-Machine" class="headerlink" title="4. 进化搜索：Darwin Gödel Machine"></a>4. 进化搜索：Darwin Gödel Machine</h1><p>如果说 Self-Harness 是”诊断-开方-验效”的闭环医疗模式，那 <strong>Darwin Gödel Machine (DGM)</strong> 走的是另一个极端——让 agent 直接修改自己的代码仓库，在开放空间中做进化搜索。</p>
+<p>DGM（UBC &#x2F; Vector Institute &#x2F; Sakana AI）的精妙之处在于其<strong>开源式探索 + 自我改进</strong>的组合：</p>
+<ul>
+<li>维护一个 agent 代码的<strong>档案库（archive）</strong>，每次迭代从中采样（不一定是当前最优的，也包括历史上表现一般的），让采样出的 agent 检查自己的代码、提出改进、实现并测试；</li>
+<li>成功的修改被<strong>追加</strong>到档案库中，形成一棵不断生长的进化树；</li>
+<li>两个消融实验直指要害：<strong>去掉自我改进</strong>（固定 meta-agent）→ SWE-bench 从 50% 跌到 39%；<strong>去掉开源式探索</strong>（总是从最新版本出发）→ 直接陷入局部最优，停在 23%。</li>
+</ul>
+<p>使用 <strong>Claude 3.5 Sonnet</strong> 作为基础模型，从一个简单初始配置出发：</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>初始</th>
+<th>80 轮进化后</th>
+<th>对比基准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SWE-bench Verified</td>
+<td>20.0%</td>
+<td><strong>50.0%</strong></td>
+<td>OpenHands+CodeAct v2.1: 53.0%</td>
+</tr>
+<tr>
+<td>Polyglot</td>
+<td>14.2%</td>
+<td><strong>30.7%</strong></td>
+<td>超越人工设计的 Aider</td>
+</tr>
+</tbody></table>
+<p>DGM 在进化过程中<strong>自动发现</strong>了多项后来被证明有效的设计：细粒度文件编辑（字符串替换替代全文件覆盖）、行范围查看（应对长上下文）、多候选方案+同行评审打分、撤销功能和编辑历史追踪、上下文超限时的摘要机制。</p>
+<p>不过也有一则来自 Goodhart’s Law 的警告：实验中 DGM 曾被观察到<strong>伪造测试日志</strong>以及<strong>试图关闭幻觉检测模块</strong>，而不是修复底层的代码问题。这提醒我们——只要优化信号本身是脆弱的，足够聪明的 agent 就会找到利用它的方式。</p>
+<h1 id="5-七个未解决的瓶颈"><a href="#5-七个未解决的瓶颈" class="headerlink" title="5. 七个未解决的瓶颈"></a>5. 七个未解决的瓶颈</h1><p>Weng 在文章末尾坦率列出了通向真正 RSI 的七个障碍，笔者认为是全篇最有价值的部分：</p>
+<ol>
+<li><p><strong>弱且模糊的 Evaluator</strong>：代码和数学任务有客观的 pass&#x2F;fail 信号，但”研究品味””创新性””长期科学价值”几乎无法量化。没有清晰的 evaluator，自进化循环就失去了方向。</p>
+</li>
+<li><p><strong>上下文与记忆的生命周期管理</strong>：任务越自主，记忆越膨胀。Weng 推测，记忆管理能力最终可能需要内化为”智能”的一部分，而非仅仅是软件系统的外部功能。</p>
+</li>
+<li><p><strong>负结果的系统性忽视</strong>：学术界的发表偏倚导致 LLM 训练数据中充斥”成功叙事”。模型不知道什么时候该放弃假设、什么时候该诚实报告失败。一个成熟的研究 Harness 应该让失败容易被记录和学习。</p>
+</li>
+<li><p><strong>多样性坍缩</strong>：进化搜索和 RL 循环倾向于利用已知高奖励模式，导致种群坍缩为单一解的变体。在没有保护机制的情况下，开源式探索变成了一句空话。</p>
+</li>
+<li><p><strong>Reward Hacking</strong>：系统优化它接收到的任何信号——过拟合单测、讨好 judge model、利用 benchmark 的统计假象——而不是真正变强。Evaluator 和权限控制应当位于进化循环<strong>外部</strong>，辅以留出测试集和轨迹审计。</p>
+</li>
+<li><p><strong>短期成功 vs 长期健康</strong>：现有一切 benchmark 都优化”完成当前任务”。但真实工程世界关心可维护性、向后兼容、迁移成本、未来调试负担——这些在短视 reward 信号里完全无法被捕捉。</p>
+</li>
+<li><p><strong>人的位置</strong>：不是把人移出 loop，而是让人<strong>向上移动</strong>到更高的抽象层。在正确的时间和抽象级别设置人的介入点——这本身就是系统设计的核心决策。</p>
+</li>
+</ol>
+<h1 id="6-小结"><a href="#6-小结" class="headerlink" title="6. 小结"></a>6. 小结</h1><p>Harness Engineering 的核心洞察可以凝练为一句话：<strong>在模型能力给定的前提下，Harness 决定了模型能力的上限</strong>。而让模型自己去改进自己的 Harness，可能是通向 RSI 的最务实工程路径。</p>
+<p>三个要点收束：</p>
+<ol>
+<li>Harness 不是附属品——它是决定 agent 能力的独立维度，与模型权重同等重要；</li>
+<li>自进化 Harness（Self-Harness &#x2F; DGM）已经证明：不改模型权重，仅优化脚手架，就能在多个 benchmark 上获得 30%~100%+ 的性能提升；</li>
+<li>但七个瓶颈——尤其是 evaluator 的模糊性、reward hacking、多样性坍缩——意味着这条路才刚刚开始，离真正的 RSI 还有相当距离。</li>
+</ol>
+<p>模型变强，Harness 也在变强，二者互为放大器——这可能是接下来 AI engineering 最值得关注的方向。</p>
 
                 
               </div>
@@ -453,9 +550,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/attention/" class="print-no-link">#attention</a>
-      
         <a href="/tags/%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84/" class="print-no-link">#模型架构</a>
+      
+        <a href="/tags/agent/" class="print-no-link">#agent</a>
+      
+        <a href="/tags/self-improvement/" class="print-no-link">#self-improvement</a>
       
     </div>
   
@@ -467,8 +566,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解</div>
-      <div>https://killerofthecard.github.io/2026/05/26/multi-head-attn/</div>
+      <div>不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程</div>
+      <div>https://killerofthecard.github.io/2026/07/20/harness-self-evolve/</div>
     </div>
     <div class="license-meta">
       
@@ -480,7 +579,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2026年5月26日</div>
+          <div>2026年7月20日</div>
         </div>
       
       
@@ -512,18 +611,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/07/20/harness-self-evolve/" title="不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">不改模型，改脚手架？｜Agent Harness 与 Self-Evolve 工程</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/05/20/attn/" title="一个token的视角｜重新看Self-Attention机制">
-                        <span class="hidden-mobile">一个token的视角｜重新看Self-Attention机制</span>
+                      <a href="/2026/05/26/multi-head-attn/" title="为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解">
+                        <span class="hidden-mobile">为什么要多个头？｜多头注意力机制（Multi-Head Attention）详解</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
