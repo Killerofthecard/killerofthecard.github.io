@@ -27,7 +27,7 @@
 <meta property="og:description" content="在之前的文章中我们梳理了 Self-Attention 的核心机制，细心的读者可能已经发现一个盲点：注意力公式 $\text{softmax}(QK^T&#x2F;\sqrt{d_k})V$ 中，所有 token 是同时、对称地参与运算的——公式本身对输入序列的排列顺序没有任何感知。也就是说，如果你把一句话的词序完全打乱，Self-Attention 给出的输出在数学上完全等价（只是行的顺序跟着变">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-23T11:54:15.037Z">
+<meta property="article:modified_time" content="2026-07-23T12:00:20.693Z">
 <meta property="article:author" content="Jerry Zhang">
 <meta property="article:tag" content="attention">
 <meta property="article:tag" content="位置编码">
@@ -328,7 +328,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.5k 字
+          7.6k 字
         
       </span>
     
@@ -339,7 +339,7 @@
         
         
         
-          63 分钟
+          64 分钟
         
       </span>
     
@@ -453,8 +453,10 @@ $$
 <p>这只与 $x_m, x_n$ 和相对位置 $n-m$ 有关，完美达成了我们的目标。这就是 RoPE 的几何直觉——<strong>用绝对位置的旋转，天然得到相对位置的表示</strong>。</p>
 <h2 id="4-3-推广到高维：分块旋转"><a href="#4-3-推广到高维：分块旋转" class="headerlink" title="4.3 推广到高维：分块旋转"></a>4.3 推广到高维：分块旋转</h2><p>二维的情况清楚了，但实际 $d$ 通常是几百维。怎么办？答案很直接：把 $d$ 维向量拆成 $d&#x2F;2$ 个二维子空间，每个子空间用不同的旋转速度 $\theta_i$。具体地，定义一组频率：</p>
 <p>$$\theta_i &#x3D; 10000^{-2i&#x2F;d}, \quad i &#x3D; 0,1,\dots,d&#x2F;2-1$$</p>
-<p>对于 query 向量 $q \in \mathbb{R}^d$，将相邻两维 $(q_{2i}, q_{2i+1})$ 绕角度 $m\theta_i$ 旋转：</p>
-<h1 id="begin-bmatrix-q-2i-’-q-2i-1-’-end-bmatrix"><a href="#begin-bmatrix-q-2i-’-q-2i-1-’-end-bmatrix" class="headerlink" title="$$\begin{bmatrix}q_{2i}’ \q_{2i+1}’\end{bmatrix}"></a>$$<br>\begin{bmatrix}<br>q_{2i}’ \<br>q_{2i+1}’<br>\end{bmatrix}</h1><p>\begin{bmatrix}<br>\cos(m\theta_i) &amp; -\sin(m\theta_i) \<br>\sin(m\theta_i) &amp; \cos(m\theta_i)<br>\end{bmatrix}<br>\begin{bmatrix}<br>q_{2i} \<br>q_{2i+1}<br>\end{bmatrix}<br>$$</p>
+<p>对于 query 向量 $q \in \mathbb{R}^d$，将相邻两维 $(q_{2i}, q_{2i+1})$ 绕角度 $m\theta_i$ 旋转。定义第 $i$ 个二维子空间的旋转矩阵：</p>
+<p>$$<br>R_i(m) &#x3D; \begin{bmatrix}<br>\cos(m\theta_i) &amp; -\sin(m\theta_i) \<br>\sin(m\theta_i) &amp; \cos(m\theta_i)<br>\end{bmatrix}<br>$$</p>
+<p>则旋转操作为：</p>
+<p>$$<br>\begin{bmatrix} q_{2i}’ \ q_{2i+1}’ \end{bmatrix}<br>&#x3D; R_i(m)<br>\begin{bmatrix} q_{2i} \ q_{2i+1} \end{bmatrix}<br>$$</p>
 <p>对 key 向量做同样的操作（角度为 $n\theta_i$），则对于第 $i$ 个二维子空间有：</p>
 <p>$$(q_i’)^T k_i’ &#x3D; q_i^T R((n-m)\theta_i) , k_i$$</p>
 <p>将所有 $d&#x2F;2$ 个子空间的内积累加，即可得到完整的内积 $\sum_{i&#x3D;0}^{d&#x2F;2-1} q_i^T R((n-m)\theta_i), k_i$。这个内积仍只依赖于相对位置 $n-m$，RoPE 在任意偶数维空间中都成立。</p>
